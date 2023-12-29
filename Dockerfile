@@ -7,7 +7,7 @@ COPY src src
 COPY tsconfig.json tsconfig.json
 COPY package*.json ./
 COPY next.config.js next.config.js
-COPY tailwind.config.js tailwind.config.js
+COPY tailwind.config.ts tailwind.config.ts
 COPY public public
 
 RUN npm ci
