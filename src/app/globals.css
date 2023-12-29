@@ -25,3 +25,55 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.primary-button {
+  color: #374151;
+  border-color: #3b82f6;
+  background-color: #dbeafe;
+}
+.primary-button:hover {
+  background-color: #93c5fd;
+}
+.primary-button:disabled {
+  color: #fff;
+  background-color: #9ca3af;
+}
+
+.secondary-button {
+  color: #6b7280;
+  border-color: #6b7280;
+  background-color: #f3f4f6;
+}
+.secondary-button:hover {
+  background-color: #d1d5db;
+}
+.secondary-button:disabled {
+  color: #fff;
+  background-color: #9ca3af;
+}
+
+.warning-button {
+  color: #000;
+  border-color: #eab308;
+  background-color: #fef9c3;
+}
+.warning-button:hover {
+  background-color: #fde047;
+}
+.warning-button:disabled {
+  color: #fff;
+  background-color: #9ca3af;
+}
+
+.danger-button {
+  color: #000;
+  border-color: #ef4444;
+  background-color: #fee2e2;
+}
+.danger-button:hover {
+  background-color: #fca5a5;
+}
+.danger-button:disabled {
+  color: #fff;
+  background-color: #9ca3af;
+}
