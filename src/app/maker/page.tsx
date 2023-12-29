@@ -202,7 +202,7 @@ const Preview = ({
   sliderValue: { x: number; y: number }
   sample: string
 }) => {
-  const sliderRatio = window.innerWidth > 768 ? 0.96 : 0.94
+  const sliderRatio = !!window && window.innerWidth > 768 ? 0.96 : 0.94
   const sliderX = sliderValue.x
   const sliderY = sliderValue.y * sliderRatio
 
