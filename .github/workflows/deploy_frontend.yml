@@ -1,0 +1,31 @@
+name: delivery frontend
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+jobs:
+  delivery:
+    runs-on: [self-hosted]
+    env:
+      IMAGE_NAME: quadrant-maker-frontend
+    steps:
+      - name: setup
+        run: |
+          docker system prune --force
+
+      - name: clone repository
+        uses: actions/checkout@v2
+
+      - name: build
+        run: >
+          docker build
+          -t ghcr.io/h-orito/${{ env.IMAGE_NAME }}:latest .
+      - name: deploy
+        run: |
+          docker login ghcr.io -u h-orito -p ${{ secrets.PACKAGE_PAT }}
+          docker push ghcr.io/h-orito/${{ env.IMAGE_NAME }}
+      - name: release
+        run: |
+          kubectl delete pod -l app=quadrant-maker-frontend
