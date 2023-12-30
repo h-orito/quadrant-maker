@@ -8,6 +8,7 @@ COPY tsconfig.json tsconfig.json
 COPY package*.json ./
 COPY next.config.js next.config.js
 COPY tailwind.config.ts tailwind.config.ts
+COPY postcss.config.js postcss.config.js
 COPY public public
 
 RUN npm ci
@@ -21,8 +22,8 @@ RUN chown nextjs:nodejs /app/.next/cache
 
 USER nextjs
 
-EXPOSE 3000
-ENV PORT 3000
+EXPOSE 3001
+ENV PORT 3001
 ENV HOST 0.0.0.0
 ENV NODE_TLS_REJECT_UNAUTHORIZED 0
 

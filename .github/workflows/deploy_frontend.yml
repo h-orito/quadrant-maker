@@ -5,15 +5,18 @@ on:
   push:
     branches:
       - main
+      - feature/deploy
 jobs:
-  delivery:
-    runs-on: [self-hosted]
+  build:
+    runs-on: [ubuntu-latest]
     env:
       IMAGE_NAME: quadrant-maker-frontend
     steps:
-      - name: setup
-        run: |
-          docker system prune --force
+      # to build arm64
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/arm64
 
       - name: clone repository
         uses: actions/checkout@v2
@@ -26,6 +29,10 @@ jobs:
         run: |
           docker login ghcr.io -u h-orito -p ${{ secrets.PACKAGE_PAT }}
           docker push ghcr.io/h-orito/${{ env.IMAGE_NAME }}
+  delivery:
+    runs-on: [self-hosted]
+    needs: build
+    steps:
       - name: release
         run: |
           kubectl delete pod -l app=quadrant-maker-frontend
