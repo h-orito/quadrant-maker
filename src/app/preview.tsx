@@ -8,33 +8,34 @@ const Preview = ({
   rightAxis,
   topAxis,
   bottomAxis,
-  bgColor,
+  outerBgColor,
+  outerColor,
   innerBgColor,
-  sliderValue,
-  sample
+  innerColor,
+  contents
 }: {
   title: string
   leftAxis: string
   rightAxis: string
   topAxis: string
   bottomAxis: string
-  bgColor: string
+  outerBgColor: string
+  outerColor: string
   innerBgColor: string
-  sliderValue: { x: number; y: number }
-  sample: string
+  innerColor: string
+  contents: Content[]
 }) => {
   const [sliderRatio, setSliderRatio] = useState(0.96)
   useEffect(() => {
     setSliderRatio(window.innerWidth > 768 ? 0.96 : 0.94)
   }, [])
-  const sliderX = sliderValue.x
-  const sliderY = sliderValue.y * sliderRatio
 
   return (
     <div
       className='p-2'
       style={{
-        backgroundColor: bgColor
+        backgroundColor: outerBgColor,
+        color: outerColor
       }}
     >
       <div>{title}</div>
@@ -43,7 +44,8 @@ const Preview = ({
         <div
           className='text-sm h-64 md:h-[32rem] mr-2'
           style={{
-            writingMode: 'vertical-lr'
+            writingMode: 'vertical-lr',
+            color: outerColor
           }}
         >
           {leftAxis}
@@ -52,13 +54,14 @@ const Preview = ({
           <div
             className='w-64 md:w-[32rem] h-64 md:h-[32rem] relative'
             style={{
-              backgroundColor: innerBgColor
+              backgroundColor: innerBgColor,
+              color: innerColor
             }}
           >
             <div
               className='absolute'
               style={{
-                backgroundColor: bgColor,
+                backgroundColor: outerBgColor,
                 top: '0',
                 left: 'calc(50% - 2px)',
                 width: '2px',
@@ -68,48 +71,75 @@ const Preview = ({
             <div
               className='absolute'
               style={{
-                backgroundColor: bgColor,
+                backgroundColor: outerBgColor,
                 top: 'calc(50% - 2px)',
                 left: '0',
                 width: '100%',
                 height: '2px'
               }}
             ></div>
-            {sliderX > 50 ? (
-              <div
-                className='absolute'
-                style={{
-                  top: `${sliderY}%`,
-                  right: `${100 - sliderX}%`
-                }}
-              >
-                <p className={`text-xs md:text-sm text-right`}>
-                  {`${sample}●`}
-                </p>
-              </div>
-            ) : (
-              <div
-                className='absolute'
-                style={{
-                  top: `${sliderY}%`,
-                  left: `${sliderX}%`
-                }}
-              >
-                <p className='text-xs md:text-sm'>{`●${sample}`}</p>
-              </div>
-            )}
+            {contents.map((content, i) => (
+              <Item key={i} content={content} sliderRatio={sliderRatio} />
+            ))}
           </div>
         </div>
         <div
           className='text-sm h-64 md:h-[32rem] ml-2'
           style={{
-            writingMode: 'vertical-lr'
+            writingMode: 'vertical-lr',
+            color: outerColor
           }}
         >
           {rightAxis}
         </div>
       </div>
       <div className='text-sm mt-2'>{bottomAxis}</div>
+    </div>
+  )
+}
+
+const Item = ({
+  content,
+  sliderRatio,
+  color
+}: {
+  content: Content
+  sliderRatio: number
+  color: string
+}) => {
+  const x = content.slider.x
+  const y = content.slider.y * sliderRatio
+  return x > 50 ? (
+    <div
+      className='absolute'
+      style={{
+        top: `${y}%`,
+        right: `${100 - x}%`
+      }}
+    >
+      <p
+        className={`text-xs md:text-sm text-right`}
+        style={{
+          color: color
+        }}
+      >{`${content.text}●`}</p>
+    </div>
+  ) : (
+    <div
+      className='absolute'
+      style={{
+        top: `${y}%`,
+        left: `${x}%`
+      }}
+    >
+      <p
+        className='text-xs md:text-sm'
+        style={{
+          color: color
+        }}
+      >
+        ●&nbsp;{content.text}
+      </p>
     </div>
   )
 }

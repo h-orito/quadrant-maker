@@ -7,6 +7,9 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import InputText from '@/components/form/input-text'
 import Slider from 'react-input-slider'
 import Preview from './preview'
+import PrimaryButton from '@/components/button/primary-button'
+import SimpleInputText from '@/components/form/simple-text'
+import InputSelect from '@/components/form/input-select'
 
 interface FormInput {
   title: string
@@ -14,7 +17,6 @@ interface FormInput {
   rightAxis: string
   topAxis: string
   bottomAxis: string
-  sample: string
 }
 
 export default function Maker() {
@@ -24,13 +26,14 @@ export default function Maker() {
       leftAxis: '',
       rightAxis: '',
       topAxis: '',
-      bottomAxis: '',
-      sample: ''
+      bottomAxis: ''
     }
   })
 
   const [bgColor, setBgColor] = useState('#99ddff')
+  const [outerColor, setOuterColor] = useState('#000000')
   const [innerBgColor, setInnerBgColor] = useState('#ffffff')
+  const [innerColor, setInnerColor] = useState('#000000')
 
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
 
@@ -43,7 +46,47 @@ export default function Maker() {
   const topAxisValue = watch('topAxis')
   const bottomAxisValue = watch('bottomAxis')
 
-  const [sliderValue, setSliderValue] = useState({ x: 0, y: 0 })
+  const [contents, setContents] = useState<Content[]>([])
+  const [currentContentIndex, setCurrentContentIndex] = useState(0)
+  const addContent = () => {
+    const newContent: Content = {
+      text: '項目',
+      slider: { x: 50, y: 50 }
+    }
+    const newContents = contents.concat(newContent)
+    setContents(newContents)
+    setCurrentContentIndex(newContents.length - 1)
+  }
+  const setSliderValue = (sliderValue: { x: number; y: number }) => {
+    const currentContent = {
+      ...contents[currentContentIndex],
+      slider: sliderValue
+    }
+    setContents(
+      contents.map((content, i) => {
+        if (i === currentContentIndex) {
+          return currentContent
+        } else {
+          return content
+        }
+      })
+    )
+  }
+  const setText = (text: string) => {
+    const currentContent = {
+      ...contents[currentContentIndex],
+      text
+    }
+    setContents(
+      contents.map((content, i) => {
+        if (i === currentContentIndex) {
+          return currentContent
+        } else {
+          return content
+        }
+      })
+    )
+  }
 
   return (
     <main className='text-center'>
@@ -54,10 +97,11 @@ export default function Maker() {
           rightAxis={rightAxisValue}
           topAxis={topAxisValue}
           bottomAxis={bottomAxisValue}
-          bgColor={bgColor}
+          outerBgColor={bgColor}
+          outerColor={outerColor}
           innerBgColor={innerBgColor}
-          sliderValue={sliderValue}
-          sample={watch('sample')}
+          innerColor={innerColor}
+          contents={contents}
         />
         <div className='p-2'>
           <div>
@@ -90,6 +134,36 @@ export default function Maker() {
                   }}
                 />
               </div>
+              <div className='my-4 flex justify-center gap-4'>
+                <div>
+                  <label className='block text-xs font-bold'>左</label>
+                  <InputText
+                    name='leftAxis'
+                    className='w-full'
+                    control={control}
+                    rules={{
+                      maxLength: {
+                        value: 50,
+                        message: `50文字以内で入力してください`
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className='block text-xs font-bold'>右</label>
+                  <InputText
+                    name='rightAxis'
+                    className='w-full'
+                    control={control}
+                    rules={{
+                      maxLength: {
+                        value: 50,
+                        message: `50文字以内で入力してください`
+                      }
+                    }}
+                  />
+                </div>
+              </div>
               <div className='my-4'>
                 <label className='block text-xs font-bold'>下</label>
                 <InputText
@@ -103,80 +177,82 @@ export default function Maker() {
                   }}
                 />
               </div>
-              <div className='my-4'>
-                <label className='block text-xs font-bold'>左</label>
-                <InputText
-                  name='leftAxis'
-                  control={control}
-                  rules={{
-                    maxLength: {
-                      value: 50,
-                      message: `50文字以内で入力してください`
-                    }
-                  }}
-                />
+              <div className='my-4 flex justify-center gap-4'>
+                <div>
+                  <label className='block text-xs font-bold'>
+                    背景色（外部）
+                  </label>
+                  <ColorPicker color={bgColor} setColor={setBgColor} />
+                </div>
+                <div>
+                  <label className='block text-xs font-bold'>
+                    文字色（外部）
+                  </label>
+                  <ColorPicker color={outerColor} setColor={setOuterColor} />
+                </div>
               </div>
-              <div className='my-4'>
-                <label className='block text-xs font-bold'>右</label>
-                <InputText
-                  name='rightAxis'
-                  control={control}
-                  rules={{
-                    maxLength: {
-                      value: 50,
-                      message: `50文字以内で入力してください`
-                    }
-                  }}
-                />
-              </div>
-              <div className='my-4'>
-                <label className='block text-xs font-bold'>
-                  背景色（全体）
-                </label>
-                <ColorPicker color={bgColor} setColor={setBgColor} />
-              </div>
-              <div className='my-4'>
-                <label className='block text-xs font-bold'>
-                  背景色（内部）
-                </label>
-                <ColorPicker color={innerBgColor} setColor={setInnerBgColor} />
+              <div className='my-4 flex justify-center gap-4'>
+                <div>
+                  <label className='block text-xs font-bold'>
+                    背景色（内部）
+                  </label>
+                  <ColorPicker
+                    color={innerBgColor}
+                    setColor={setInnerBgColor}
+                  />
+                </div>
+                <div>
+                  <label className='block text-xs font-bold'>
+                    文字色（内部）
+                  </label>
+                  <ColorPicker color={innerColor} setColor={setInnerColor} />
+                </div>
               </div>
             </form>
           </div>
           <div>入力部分</div>
-          <div>
-            <div
-              className='flex justify-center p-2'
-              style={{
-                backgroundColor: bgColor
-              }}
-            >
-              <Slider
-                axis='xy'
-                x={sliderValue.x}
-                y={sliderValue.y}
-                onChange={setSliderValue}
-                styles={{
-                  track: {
-                    backgroundColor: innerBgColor
-                  },
-                  disabled: {
-                    opacity: 0.5
-                  }
+
+          <PrimaryButton click={addContent}>追加</PrimaryButton>
+          {contents.length > 0 && (
+            <div>
+              <div>
+                <InputSelect
+                  candidates={contents.map((content, i) => ({
+                    label: content.text,
+                    value: i
+                  }))}
+                  selected={currentContentIndex}
+                  setSelected={setCurrentContentIndex}
+                />
+              </div>
+              <div
+                className='flex justify-center p-2'
+                style={{
+                  backgroundColor: bgColor
                 }}
+              >
+                <Slider
+                  axis='xy'
+                  x={contents[currentContentIndex].slider.x}
+                  y={contents[currentContentIndex].slider.y}
+                  onChange={setSliderValue}
+                  styles={{
+                    track: {
+                      backgroundColor: innerBgColor
+                    },
+                    disabled: {
+                      opacity: 0.5
+                    }
+                  }}
+                />
+              </div>
+              <SimpleInputText
+                text={contents[currentContentIndex].text}
+                setText={setText}
+                deletable={true}
               />
             </div>
-            <InputText
-              name='sample'
-              control={control}
-              rules={{
-                maxLength: {
-                  value: 50,
-                  message: `50文字以内で入力してください`
-                }
-              }}
-            />
-          </div>
+          )}
         </div>
       </div>
     </main>
@@ -206,7 +282,7 @@ const ColorPicker = ({
         className='base-border border bg-white p-0.5'
         onClick={handleOpen}
       >
-        <p className='h-6 w-20' style={{ backgroundColor: color }}></p>
+        <p className='h-6 w-28' style={{ backgroundColor: color }}></p>
       </button>
       {isPickerOpen && (
         <Modal close={toggleModal} hideFooter>
