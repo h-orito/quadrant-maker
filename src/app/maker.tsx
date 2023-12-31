@@ -2,14 +2,14 @@
 
 import Modal from '@/components/modal/modal'
 import { ChromePicker } from 'react-color'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import InputText from '@/components/form/input-text'
-import Slider from 'react-input-slider'
-import Preview from './preview'
+import Preview from './_preview/preview'
+import SubmitButton from '@/components/button/submit-button'
+import { storeTemplate } from '@/components/firebase/firebase'
+import { getFirebaseApp } from '@/lib/firebase/firebase'
 import PrimaryButton from '@/components/button/primary-button'
-import SimpleInputText from '@/components/form/simple-text'
-import InputSelect from '@/components/form/input-select'
 
 interface FormInput {
   title: string
@@ -20,6 +20,10 @@ interface FormInput {
 }
 
 export default function Maker() {
+  useEffect(() => {
+    getFirebaseApp()
+  }, [])
+
   const { control, formState, handleSubmit, watch } = useForm<FormInput>({
     defaultValues: {
       title: 'タイトル',
@@ -35,73 +39,55 @@ export default function Maker() {
   const [innerBgColor, setInnerBgColor] = useState('#ffffff')
   const [innerColor, setInnerColor] = useState('#000000')
 
+  const [url, setUrl] = useState('')
+  const [key, setKey] = useState('')
+
   const canSubmit: boolean = formState.isValid && !formState.isSubmitting
+  const onSubmit: SubmitHandler<FormInput> = useCallback(
+    async (data) => {
+      const newKey = await storeTemplate(
+        {
+          title: data.title,
+          axis: {
+            left: data.leftAxis,
+            right: data.rightAxis,
+            top: data.topAxis,
+            bottom: data.bottomAxis
+          },
+          color: {
+            outerBg: bgColor,
+            outer: outerColor,
+            innerBg: innerBgColor,
+            inner: innerColor
+          }
+        } as Template,
+        key
+      )
+      const newUrl = `${location.origin}/quadrant-maker/template/${newKey}`
+      setUrl(newUrl)
+      setKey(newKey)
+    },
+    [bgColor, outerColor, innerBgColor, innerColor, key]
+  )
 
-  const onSubmit: SubmitHandler<FormInput> = useCallback((data) => {
-    console.log(data)
-  }, [])
-  const titleValue = watch('title')
-  const leftAxisValue = watch('leftAxis')
-  const rightAxisValue = watch('rightAxis')
-  const topAxisValue = watch('topAxis')
-  const bottomAxisValue = watch('bottomAxis')
-
-  const [contents, setContents] = useState<Content[]>([])
-  const [currentContentIndex, setCurrentContentIndex] = useState(0)
-  const addContent = () => {
-    const newContent: Content = {
-      text: '項目',
-      slider: { x: 50, y: 50 }
-    }
-    const newContents = contents.concat(newContent)
-    setContents(newContents)
-    setCurrentContentIndex(newContents.length - 1)
-  }
-  const setSliderValue = (sliderValue: { x: number; y: number }) => {
-    const currentContent = {
-      ...contents[currentContentIndex],
-      slider: sliderValue
-    }
-    setContents(
-      contents.map((content, i) => {
-        if (i === currentContentIndex) {
-          return currentContent
-        } else {
-          return content
-        }
-      })
-    )
-  }
-  const setText = (text: string) => {
-    const currentContent = {
-      ...contents[currentContentIndex],
-      text
-    }
-    setContents(
-      contents.map((content, i) => {
-        if (i === currentContentIndex) {
-          return currentContent
-        } else {
-          return content
-        }
-      })
-    )
+  const copyTextToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text)
   }
 
   return (
     <main className='text-center'>
       <div className='grid lg:grid-cols-2'>
         <Preview
-          title={titleValue}
-          leftAxis={leftAxisValue}
-          rightAxis={rightAxisValue}
-          topAxis={topAxisValue}
-          bottomAxis={bottomAxisValue}
+          title={watch('title')}
+          leftAxis={watch('leftAxis')}
+          rightAxis={watch('rightAxis')}
+          topAxis={watch('topAxis')}
+          bottomAxis={watch('bottomAxis')}
           outerBgColor={bgColor}
           outerColor={outerColor}
           innerBgColor={innerBgColor}
           innerColor={innerColor}
-          contents={contents}
+          contents={[]}
         />
         <div className='p-2'>
           <div>
@@ -208,51 +194,28 @@ export default function Maker() {
                   <ColorPicker color={innerColor} setColor={setInnerColor} />
                 </div>
               </div>
+              <SubmitButton
+                label='保存して入力用URLを発行'
+                disabled={!canSubmit}
+              />
+              {url.length > 0 && (
+                <div className='flex w-full my-2'>
+                  <input
+                    className='flex-1 rounded border px-2 py-1 text-gray-700'
+                    onChange={() => {}}
+                    value={url}
+                    disabled
+                  />
+                  <PrimaryButton
+                    className='bg-blue-500 text-white px-2 py-1 rounded'
+                    click={() => copyTextToClipboard(url)}
+                  >
+                    コピー
+                  </PrimaryButton>
+                </div>
+              )}
             </form>
           </div>
-          <div>入力部分</div>
-
-          <PrimaryButton click={addContent}>追加</PrimaryButton>
-          {contents.length > 0 && (
-            <div>
-              <div>
-                <InputSelect
-                  candidates={contents.map((content, i) => ({
-                    label: content.text,
-                    value: i
-                  }))}
-                  selected={currentContentIndex}
-                  setSelected={setCurrentContentIndex}
-                />
-              </div>
-              <div
-                className='flex justify-center p-2'
-                style={{
-                  backgroundColor: bgColor
-                }}
-              >
-                <Slider
-                  axis='xy'
-                  x={contents[currentContentIndex].slider.x}
-                  y={contents[currentContentIndex].slider.y}
-                  onChange={setSliderValue}
-                  styles={{
-                    track: {
-                      backgroundColor: innerBgColor
-                    },
-                    disabled: {
-                      opacity: 0.5
-                    }
-                  }}
-                />
-              </div>
-              <SimpleInputText
-                text={contents[currentContentIndex].text}
-                setText={setText}
-                deletable={true}
-              />
-            </div>
-          )}
         </div>
       </div>
     </main>

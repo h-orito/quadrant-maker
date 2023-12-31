@@ -79,7 +79,12 @@ const Preview = ({
               }}
             ></div>
             {contents.map((content, i) => (
-              <Item key={i} content={content} sliderRatio={sliderRatio} />
+              <Item
+                key={i}
+                content={content}
+                sliderRatio={sliderRatio}
+                color={innerColor}
+              />
             ))}
           </div>
         </div>
@@ -122,7 +127,9 @@ const Item = ({
         style={{
           color: color
         }}
-      >{`${content.text}●`}</p>
+      >
+        {content.text}&nbsp;●
+      </p>
     </div>
   ) : (
     <div
