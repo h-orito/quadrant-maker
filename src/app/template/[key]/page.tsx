@@ -12,5 +12,11 @@ export async function generateMetadata({
   params: { key: string }
 }): Promise<Metadata> {
   const template = await fetchCacheTemplate(params.key)
-  return { title: template?.title ?? '象限メーカー' }
+  let title = '推しを配置するやつ'
+  if (template != null) {
+    title = `推しを配置するやつ | ${template?.title}`
+  }
+  return {
+    title
+  }
 }

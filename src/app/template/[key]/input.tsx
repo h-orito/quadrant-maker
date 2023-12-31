@@ -1,6 +1,6 @@
 'use client'
 
-import { cache, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Slider from 'react-input-slider'
 import Preview from '@/app/_preview/preview'
 import PrimaryButton from '@/components/button/primary-button'
@@ -8,6 +8,7 @@ import SimpleInputText from '@/components/form/simple-text'
 import InputSelect from '@/components/form/input-select'
 import Head from 'next/head'
 import { fetchCacheTemplate } from './api'
+import DangerButton from '@/components/button/danger-button'
 
 export function Input({ templateKey }: { templateKey: string }) {
   const [template, setTemplate] = useState<Template | null>(null)
@@ -27,6 +28,11 @@ export function Input({ templateKey }: { templateKey: string }) {
       slider: { x: 50, y: 50 }
     }
     const newContents = contents.concat(newContent)
+    setContents(newContents)
+    setCurrentContentIndex(newContents.length - 1)
+  }
+  const deleteCurrentContent = () => {
+    const newContents = contents.filter((_, i) => i !== currentContentIndex)
     setContents(newContents)
     setCurrentContentIndex(newContents.length - 1)
   }
@@ -67,7 +73,7 @@ export function Input({ templateKey }: { templateKey: string }) {
     <>
       {!!template && (
         <Head>
-          <title>象限メーカー | {template.title}</title>
+          <title>推しを配置するやつ | {template.title}</title>
         </Head>
       )}
 
@@ -75,6 +81,7 @@ export function Input({ templateKey }: { templateKey: string }) {
         <div className='grid lg:grid-cols-2'>
           <Preview
             title={template.title}
+            author={template.author}
             leftAxis={template.axis.left}
             rightAxis={template.axis.right}
             topAxis={template.axis.top}
@@ -86,11 +93,17 @@ export function Input({ templateKey }: { templateKey: string }) {
             contents={contents}
           />
           <div className='p-2'>
-            <PrimaryButton click={addContent}>追加</PrimaryButton>
+            <div className='my-2'>
+              <p className='text-xs'>
+                配置したい項目を追加・調整し、プレビュー部分のスクショを撮って共有しましょう。
+              </p>
+            </div>
+            <PrimaryButton click={addContent}>項目追加</PrimaryButton>
             {contents.length > 0 && (
-              <div>
+              <div className='mt-2'>
                 <div>
                   <InputSelect
+                    label='編集中の項目'
                     candidates={contents.map((content, i) => ({
                       label: content.text,
                       value: i
@@ -99,32 +112,41 @@ export function Input({ templateKey }: { templateKey: string }) {
                     setSelected={setCurrentContentIndex}
                   />
                 </div>
-                <div
-                  className='flex justify-center p-2'
-                  style={{
-                    backgroundColor: template.color.outerBg
-                  }}
-                >
-                  <Slider
-                    axis='xy'
-                    x={contents[currentContentIndex].slider.x}
-                    y={contents[currentContentIndex].slider.y}
-                    onChange={setSliderValue}
-                    styles={{
-                      track: {
-                        backgroundColor: template.color.innerBg
-                      },
-                      disabled: {
-                        opacity: 0.5
-                      }
-                    }}
+                <div className='my-2'>
+                  <SimpleInputText
+                    label='項目名'
+                    text={contents[currentContentIndex].text}
+                    setText={setText}
+                    deletable={true}
                   />
                 </div>
-                <SimpleInputText
-                  text={contents[currentContentIndex].text}
-                  setText={setText}
-                  deletable={true}
-                />
+                <div className='my-2'>
+                  <label className='block text-xs font-bold'>表示位置</label>
+                  <div
+                    className='flex justify-center p-2'
+                    style={{
+                      backgroundColor: template.color.outerBg
+                    }}
+                  >
+                    <Slider
+                      axis='xy'
+                      x={contents[currentContentIndex].slider.x}
+                      y={contents[currentContentIndex].slider.y}
+                      onChange={setSliderValue}
+                      styles={{
+                        track: {
+                          backgroundColor: template.color.innerBg
+                        },
+                        disabled: {
+                          opacity: 0.5
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                <DangerButton className='mt-2' click={deleteCurrentContent}>
+                  現在表示している項目を削除
+                </DangerButton>
               </div>
             )}
           </div>

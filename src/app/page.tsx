@@ -1,11 +1,10 @@
-import Head from 'next/head'
 import Maker from './maker'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '象限メーカー',
+  title: '推しを配置するやつ',
   description:
-    '象限を作ったり、共有した象限の内容を簡単に記入できるサービスです。'
+    '推しを配置するやつを作ったり、共有した内容に推しを簡単に記入できるサービスです。'
 }
 
 export default function Page() {

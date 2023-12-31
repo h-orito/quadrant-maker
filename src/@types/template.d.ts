@@ -1,5 +1,6 @@
 type Template = {
   title: string
+  author?: string
   axis: {
     left: string
     right: string

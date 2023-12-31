@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 const Preview = ({
   title,
+  author,
   leftAxis,
   rightAxis,
   topAxis,
@@ -15,6 +16,7 @@ const Preview = ({
   contents
 }: {
   title: string
+  author: string | undefined
   leftAxis: string
   rightAxis: string
   topAxis: string
@@ -98,7 +100,28 @@ const Preview = ({
           {rightAxis}
         </div>
       </div>
-      <div className='text-sm mt-2'>{bottomAxis}</div>
+      <div
+        className='text-sm mt-2'
+        style={{
+          color: outerColor
+        }}
+      >
+        {bottomAxis}
+      </div>
+      <div
+        className='text-xs text-right mt-2'
+        style={{
+          color: outerColor
+        }}
+      >
+        {author && (
+          <>
+            <span>作成者: {author}</span>
+            <br />
+          </>
+        )}
+        提供: 推しを配置するやつ @ort_dev
+      </div>
     </div>
   )
 }
@@ -128,7 +151,7 @@ const Item = ({
           color: color
         }}
       >
-        {content.text}&nbsp;●
+        {content.text}
       </p>
     </div>
   ) : (
@@ -145,7 +168,7 @@ const Item = ({
           color: color
         }}
       >
-        ●&nbsp;{content.text}
+        {content.text}
       </p>
     </div>
   )

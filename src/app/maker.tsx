@@ -13,6 +13,7 @@ import PrimaryButton from '@/components/button/primary-button'
 
 interface FormInput {
   title: string
+  author: string
   leftAxis: string
   rightAxis: string
   topAxis: string
@@ -26,7 +27,8 @@ export default function Maker() {
 
   const { control, formState, handleSubmit, watch } = useForm<FormInput>({
     defaultValues: {
-      title: 'タイトル',
+      title: '',
+      author: '',
       leftAxis: '',
       rightAxis: '',
       topAxis: '',
@@ -48,6 +50,7 @@ export default function Maker() {
       const newKey = await storeTemplate(
         {
           title: data.title,
+          author: data.author,
           axis: {
             left: data.leftAxis,
             right: data.rightAxis,
@@ -74,11 +77,24 @@ export default function Maker() {
     await navigator.clipboard.writeText(text)
   }
 
+  const sampleContents = [
+    {
+      text: 'サンプル1',
+      slider: { x: 25, y: 75 }
+    },
+    {
+      text: 'サンプル2',
+      slider: { x: 75, y: 25 }
+    }
+  ]
+  const [shouldShowSample, setShouldShowSample] = useState(false)
+
   return (
     <main className='text-center'>
       <div className='grid lg:grid-cols-2'>
         <Preview
           title={watch('title')}
+          author={watch('author')}
           leftAxis={watch('leftAxis')}
           rightAxis={watch('rightAxis')}
           topAxis={watch('topAxis')}
@@ -87,11 +103,10 @@ export default function Maker() {
           outerColor={outerColor}
           innerBgColor={innerBgColor}
           innerColor={innerColor}
-          contents={[]}
+          contents={shouldShowSample ? sampleContents : []}
         />
         <div className='p-2'>
           <div>
-            <p>作成</p>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className='my-4'>
                 <label className='block text-xs font-bold'>タイトル</label>
@@ -105,6 +120,7 @@ export default function Maker() {
                       message: `50文字以内で入力してください`
                     }
                   }}
+                  placeholder='タイトル'
                 />
               </div>
               <div className='my-4'>
@@ -163,6 +179,19 @@ export default function Maker() {
                   }}
                 />
               </div>
+              <div className='my-4'>
+                <label className='block text-xs font-bold'>作者</label>
+                <InputText
+                  name='author'
+                  control={control}
+                  rules={{
+                    maxLength: {
+                      value: 50,
+                      message: `50文字以内で入力してください`
+                    }
+                  }}
+                />
+              </div>
               <div className='my-4 flex justify-center gap-4'>
                 <div>
                   <label className='block text-xs font-bold'>
@@ -193,6 +222,18 @@ export default function Maker() {
                   </label>
                   <ColorPicker color={innerColor} setColor={setInnerColor} />
                 </div>
+              </div>
+              <div className='my-4'>
+                <input
+                  type='checkbox'
+                  name='should-sample'
+                  id='should-sample'
+                  checked={shouldShowSample}
+                  onChange={() => setShouldShowSample(!shouldShowSample)}
+                />
+                <label htmlFor='should-sample' className='text-xs pl-1'>
+                  サンプルを表示する
+                </label>
               </div>
               <SubmitButton
                 label='保存して入力用URLを発行'
