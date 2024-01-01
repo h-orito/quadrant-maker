@@ -22,7 +22,7 @@ const SimpleInputText = ({
         />
         {deletable && (
           <button
-            className='text-xs text-gray-500 -ml-7 py-1 px-2 bg-gray-300'
+            className='text-xs text-gray-500 -ml-7 py-1 px-2 bg-gray-300 rounded'
             onClick={() => setText('')}
           >
             ×

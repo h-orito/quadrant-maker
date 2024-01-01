@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { CSSProperties, useEffect, useState } from 'react'
 
 const Preview = ({
   title,
@@ -44,7 +44,7 @@ const Preview = ({
       <div className='text-sm mb-2'>{topAxis}</div>
       <div className='flex justify-center'>
         <div
-          className='text-sm h-64 md:h-[32rem] mr-2'
+          className='text-sm h-64 md:h-[32rem] mx-2'
           style={{
             writingMode: 'vertical-lr',
             color: outerColor
@@ -91,7 +91,7 @@ const Preview = ({
           </div>
         </div>
         <div
-          className='text-sm h-64 md:h-[32rem] ml-2'
+          className='text-sm h-64 md:h-[32rem] mx-2'
           style={{
             writingMode: 'vertical-lr',
             color: outerColor
@@ -137,33 +137,20 @@ const Item = ({
 }) => {
   const x = content.slider.x
   const y = content.slider.y * sliderRatio
-  return x > 50 ? (
-    <div
-      className='absolute'
-      style={{
-        top: `${y}%`,
-        right: `${100 - x}%`
-      }}
-    >
+  const cssProperties: CSSProperties =
+    x > 50
+      ? {
+          top: `${y}%`,
+          right: `${100 - x}%`
+        }
+      : {
+          top: `${y}%`,
+          left: `${x}%`
+        }
+  return (
+    <div className='absolute' style={cssProperties}>
       <p
         className={`text-xs md:text-sm text-right`}
-        style={{
-          color: color
-        }}
-      >
-        {content.text}
-      </p>
-    </div>
-  ) : (
-    <div
-      className='absolute'
-      style={{
-        top: `${y}%`,
-        left: `${x}%`
-      }}
-    >
-      <p
-        className='text-xs md:text-sm'
         style={{
           color: color
         }}

@@ -101,7 +101,7 @@ export function Input({ templateKey }: { templateKey: string }) {
             <PrimaryButton click={addContent}>項目追加</PrimaryButton>
             {contents.length > 0 && (
               <div className='mt-2'>
-                <div>
+                <div className='px-4'>
                   <InputSelect
                     label='編集中の項目'
                     candidates={contents.map((content, i) => ({
