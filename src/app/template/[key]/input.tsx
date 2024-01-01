@@ -32,6 +32,7 @@ export function Input({ templateKey }: { templateKey: string }) {
     setCurrentContentIndex(newContents.length - 1)
   }
   const deleteCurrentContent = () => {
+    if (window.confirm('現在編集中の項目を削除しますか？') === false) return
     const newContents = contents.filter((_, i) => i !== currentContentIndex)
     setContents(newContents)
     setCurrentContentIndex(newContents.length - 1)
@@ -98,20 +99,27 @@ export function Input({ templateKey }: { templateKey: string }) {
                 配置したい項目を追加・調整し、プレビュー部分のスクショを撮って共有しましょう。
               </p>
             </div>
-            <PrimaryButton click={addContent}>項目追加</PrimaryButton>
-            {contents.length > 0 && (
-              <div className='mt-2'>
-                <div className='px-4'>
+            <div className='mt-2'>
+              <div className='flex'>
+                <div className='flex-1'>
                   <InputSelect
-                    label='編集中の項目'
                     candidates={contents.map((content, i) => ({
                       label: content.text,
                       value: i
                     }))}
                     selected={currentContentIndex}
                     setSelected={setCurrentContentIndex}
+                    placeholder='+を押して追加してください'
                   />
                 </div>
+                <PrimaryButton click={addContent}>+</PrimaryButton>
+                {contents.length > 0 && (
+                  <DangerButton click={deleteCurrentContent}>-</DangerButton>
+                )}
+              </div>
+            </div>
+            {contents.length > 0 && (
+              <div className='mt-2'>
                 <div className='my-2'>
                   <SimpleInputText
                     label='項目名'
@@ -144,9 +152,6 @@ export function Input({ templateKey }: { templateKey: string }) {
                     />
                   </div>
                 </div>
-                <DangerButton className='mt-2' click={deleteCurrentContent}>
-                  現在表示している項目を削除
-                </DangerButton>
               </div>
             )}
           </div>

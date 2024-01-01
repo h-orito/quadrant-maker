@@ -6,6 +6,7 @@ type Props = {
   candidates: Array<Option>
   selected: any
   setSelected: (value: any) => void
+  placeholder?: string
   disabled?: boolean
 }
 
@@ -20,6 +21,7 @@ export default function InputSelect({
   candidates,
   selected,
   setSelected,
+  placeholder,
   disabled
 }: Props) {
   const handleChange = (value: SingleValue<Option>) => {
@@ -34,6 +36,7 @@ export default function InputSelect({
         <label className='base-text block text-xs font-bold'>{label}</label>
       )}
       <Select
+        placeholder={placeholder}
         className={`${className ?? ''} text-gray-700`}
         defaultValue={defaultOptions}
         options={candidates}
