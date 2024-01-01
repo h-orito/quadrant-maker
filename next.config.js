@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-  basePath: '/quadrant-maker'
+  basePath: '/positioning-map'
 }
 
 module.exports = nextConfig

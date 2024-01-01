@@ -66,7 +66,7 @@ export default function Maker() {
         } as Template,
         key
       )
-      const newUrl = `${location.origin}/quadrant-maker/template/${newKey}`
+      const newUrl = `${location.origin}/positioning-map/template/${newKey}`
       setUrl(newUrl)
       setKey(newKey)
     },
