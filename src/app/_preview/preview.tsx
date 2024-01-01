@@ -120,7 +120,7 @@ const Preview = ({
             <br />
           </>
         )}
-        提供: 推しを配置するやつ @ort_dev
+        提供: 配置するやつメーカー @ort_dev
       </div>
     </div>
   )

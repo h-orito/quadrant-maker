@@ -12,9 +12,9 @@ export async function generateMetadata({
   params: { key: string }
 }): Promise<Metadata> {
   const template = await fetchCacheTemplate(params.key)
-  let title = '推しを配置するやつ'
+  let title = '配置するやつメーカー'
   if (template != null) {
-    title = `推しを配置するやつ | ${template?.title}`
+    title = `配置するやつメーカー | ${template?.title}`
   }
   return {
     title
