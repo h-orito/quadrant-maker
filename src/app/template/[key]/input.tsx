@@ -138,6 +138,9 @@ export function Input({ templateKey }: { templateKey: string }) {
                       track: {
                         backgroundColor: template.color.innerBg
                       },
+                      thumb: {
+                        backgroundColor: template.color.inner
+                      },
                       disabled: {
                         opacity: 0.5
                       }
