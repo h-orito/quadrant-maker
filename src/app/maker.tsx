@@ -239,22 +239,22 @@ export default function Maker() {
                 label='保存して入力用URLを発行'
                 disabled={!canSubmit}
               />
-              {url.length > 0 && (
-                <div className='flex w-full my-2'>
-                  <input
-                    className='flex-1 rounded border px-2 py-1 text-gray-700'
-                    onChange={() => {}}
-                    value={url}
-                    disabled
-                  />
-                  <PrimaryButton
-                    className='bg-blue-500 text-white px-2 py-1 rounded'
-                    click={() => copyTextToClipboard(url)}
-                  >
-                    コピー
-                  </PrimaryButton>
-                </div>
-              )}
+              <div className='flex w-full my-2'>
+                <input
+                  className='flex-1 rounded border px-2 py-1 text-gray-700'
+                  onChange={() => {}}
+                  value={url}
+                  placeholder='保存するとURLが表示されます'
+                  disabled
+                />
+                <PrimaryButton
+                  className='bg-blue-500 text-white px-2 py-1 rounded'
+                  click={() => copyTextToClipboard(url)}
+                  disabled={url.length <= 0}
+                >
+                  コピー
+                </PrimaryButton>
+              </div>
             </form>
           </div>
         </div>
