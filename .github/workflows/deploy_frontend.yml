@@ -7,16 +7,10 @@ on:
       - main
 jobs:
   build:
-    runs-on: [ubuntu-latest]
+    runs-on: [self-hosted]
     env:
       IMAGE_NAME: quadrant-maker-frontend
     steps:
-      # to build arm64
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: linux/arm64
-
       - name: clone repository
         uses: actions/checkout@v2
 
@@ -41,4 +35,5 @@ jobs:
     steps:
       - name: release
         run: |
+          docker system prune --force
           kubectl delete pod -l app=quadrant-maker-frontend
