@@ -1,5 +1,7 @@
 type Content = {
-  text: string
-  author?: string
+  type: string
+  text?: string
+  file?: File | null
+  imageSizeSlider?: { x: number }
   slider: { x: number; y: number }
 }

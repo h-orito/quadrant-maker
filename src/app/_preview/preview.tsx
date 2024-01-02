@@ -80,14 +80,18 @@ const Preview = ({
                 height: '2px'
               }}
             ></div>
-            {contents.map((content, i) => (
-              <Item
-                key={i}
-                content={content}
-                sliderRatio={sliderRatio}
-                color={innerColor}
-              />
-            ))}
+            {contents.map((content, i) => {
+              return content.type === 'text' ? (
+                <TextItem
+                  key={i}
+                  content={content}
+                  sliderRatio={sliderRatio}
+                  color={innerColor}
+                />
+              ) : (
+                <ImageItem key={i} content={content} color={innerColor} />
+              )
+            })}
           </div>
         </div>
         <div
@@ -126,7 +130,7 @@ const Preview = ({
   )
 }
 
-const Item = ({
+const TextItem = ({
   content,
   sliderRatio,
   color
@@ -158,6 +162,40 @@ const Item = ({
         {content.text}
       </p>
     </div>
+  )
+}
+
+const ImageItem = ({ content, color }: { content: Content; color: string }) => {
+  const x = content.slider.x
+  const y = content.slider.y
+  const cssXProperties: CSSProperties =
+    x > 50
+      ? {
+          right: `${100 - x}%`
+        }
+      : {
+          left: `${x}%`
+        }
+  const cssYProperties: CSSProperties =
+    y > 50
+      ? {
+          bottom: `${100 - y}%`
+        }
+      : {
+          top: `${y}%`
+        }
+  if (content.file == null) return <></>
+  return (
+    <img
+      className='absolute'
+      src={URL.createObjectURL(content.file)}
+      alt='画像'
+      style={{
+        ...cssXProperties,
+        ...cssYProperties,
+        width: `${content.imageSizeSlider!.x}%`
+      }}
+    />
   )
 }
 

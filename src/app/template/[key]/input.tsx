@@ -1,14 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import Slider from 'react-input-slider'
 import Preview from '@/app/_preview/preview'
 import PrimaryButton from '@/components/button/primary-button'
 import SimpleInputText from '@/components/form/simple-text'
 import InputSelect from '@/components/form/input-select'
-import Head from 'next/head'
 import { fetchCacheTemplate } from './api'
 import DangerButton from '@/components/button/danger-button'
+import InputImage from '@/components/form/input-image'
 
 export function Input({ templateKey }: { templateKey: string }) {
   const [template, setTemplate] = useState<Template | null>(null)
@@ -22,11 +22,23 @@ export function Input({ templateKey }: { templateKey: string }) {
 
   const [contents, setContents] = useState<Content[]>([])
   const [currentContentIndex, setCurrentContentIndex] = useState(0)
-  const addContent = () => {
+  const addTextContent = () => {
     const newContent: Content = {
+      type: 'text',
       text: '項目',
       slider: { x: 50, y: 50 }
     }
+    addContent(newContent)
+  }
+  const addImageContent = () => {
+    const newContent: Content = {
+      type: 'image',
+      imageSizeSlider: { x: 50 },
+      slider: { x: 50, y: 50 }
+    }
+    addContent(newContent)
+  }
+  const addContent = (newContent: Content) => {
     const newContents = contents.concat(newContent)
     setContents(newContents)
     setCurrentContentIndex(newContents.length - 1)
@@ -42,25 +54,34 @@ export function Input({ templateKey }: { templateKey: string }) {
       ...contents[currentContentIndex],
       slider: sliderValue
     }
-    setContents(
-      contents.map((content, i) => {
-        if (i === currentContentIndex) {
-          return currentContent
-        } else {
-          return content
-        }
-      })
-    )
+    setNewContents(currentContent)
   }
   const setText = (text: string) => {
     const currentContent = {
       ...contents[currentContentIndex],
       text
     }
+    setNewContents(currentContent)
+  }
+  const setImage = (file: File | null) => {
+    const currentContent = {
+      ...contents[currentContentIndex],
+      file
+    }
+    setNewContents(currentContent)
+  }
+  const setImageSizeSliderValue = (sliderValue: { x: number }) => {
+    const currentContent = {
+      ...contents[currentContentIndex],
+      imageSizeSlider: sliderValue
+    }
+    setNewContents(currentContent)
+  }
+  const setNewContents = (newContent: Content) => {
     setContents(
       contents.map((content, i) => {
         if (i === currentContentIndex) {
-          return currentContent
+          return newContent
         } else {
           return content
         }
@@ -86,7 +107,7 @@ export function Input({ templateKey }: { templateKey: string }) {
           innerColor={template.color.inner}
           contents={contents}
         />
-        <div className='p-2'>
+        <div className='p-2 overflow-y-auto'>
           <div className='my-2'>
             <p className='text-xs'>
               配置したい項目を追加・調整し、プレビュー部分のスクショを撮って共有しましょう。
@@ -94,34 +115,64 @@ export function Input({ templateKey }: { templateKey: string }) {
           </div>
           <div className='mt-2'>
             <div className='flex'>
+              <PrimaryButton className='flex-1' click={addTextContent}>
+                テキスト追加
+              </PrimaryButton>
+              <PrimaryButton className='flex-1' click={addImageContent}>
+                画像追加
+              </PrimaryButton>
+            </div>
+            <div className='flex'>
               <div className='flex-1'>
                 <InputSelect
                   candidates={contents.map((content, i) => ({
-                    label: content.text,
+                    label: content.text ?? `画像${i + 1}`,
                     value: i
                   }))}
                   selected={currentContentIndex}
                   setSelected={setCurrentContentIndex}
-                  placeholder='+を押して追加してください'
+                  placeholder='追加してください'
                 />
               </div>
-              <PrimaryButton click={addContent}>+</PrimaryButton>
-              {contents.length > 0 && (
-                <DangerButton click={deleteCurrentContent}>-</DangerButton>
-              )}
+              <DangerButton
+                click={deleteCurrentContent}
+                disabled={contents.length <= 0}
+              >
+                削除
+              </DangerButton>
             </div>
           </div>
           {contents.length > 0 && (
             <div className='mt-2'>
+              {contents[currentContentIndex].type === 'text' ? (
+                <div className='my-2'>
+                  <SimpleInputText
+                    label='項目名'
+                    text={contents[currentContentIndex].text ?? ''}
+                    setText={setText}
+                    deletable={true}
+                  />
+                </div>
+              ) : (
+                <div className='my-2'>
+                  <InputImage setImage={setImage} />
+                </div>
+              )}
               <div className='my-2'>
-                <SimpleInputText
-                  label='項目名'
-                  text={contents[currentContentIndex].text}
-                  setText={setText}
-                  deletable={true}
-                />
-              </div>
-              <div className='my-2'>
+                {contents[currentContentIndex].type === 'image' && (
+                  <>
+                    <label className='block text-xs font-bold'>
+                      画像サイズ
+                    </label>
+                    <div className='flex justify-center p-2'>
+                      <Slider
+                        axis='x'
+                        x={contents[currentContentIndex].imageSizeSlider!.x}
+                        onChange={setImageSizeSliderValue}
+                      />
+                    </div>
+                  </>
+                )}
                 <label className='block text-xs font-bold'>表示位置</label>
                 <div
                   className='flex justify-center p-2'

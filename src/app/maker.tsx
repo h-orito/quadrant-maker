@@ -79,10 +79,12 @@ export default function Maker() {
 
   const sampleContents = [
     {
+      type: 'text',
       text: 'サンプル1',
       slider: { x: 25, y: 75 }
     },
     {
+      type: 'text',
       text: 'サンプル2',
       slider: { x: 75, y: 25 }
     }
