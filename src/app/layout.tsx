@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 import './globals.css'
+import Script from 'next/script'
+import Head from 'next/head'
 
 export const metadata: Metadata = {
   title: '配置するやつメーカー',
@@ -14,14 +16,13 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <head>
-        <script
-          async
-          src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0917187897820609'
-          crossOrigin='anonymous'
-        ></script>
-      </head>
       <body>{children}</body>
+      <Script
+        async
+        src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0917187897820609'
+        crossOrigin='anonymous'
+        strategy='afterInteractive'
+      />
     </html>
   )
 }
