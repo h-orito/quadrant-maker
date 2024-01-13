@@ -10,6 +10,7 @@ import SubmitButton from '@/components/button/submit-button'
 import { storeTemplate } from '@/components/firebase/firebase'
 import { getFirebaseApp } from '@/lib/firebase/firebase'
 import PrimaryButton from '@/components/button/primary-button'
+import Link from 'next/link'
 
 interface FormInput {
   title: string
@@ -233,7 +234,7 @@ export default function Maker() {
                   checked={shouldShowSample}
                   onChange={() => setShouldShowSample(!shouldShowSample)}
                 />
-                <label htmlFor='should-sample' className='text-xs pl-1'>
+                <label htmlFor='should-sample' className='pl-1 text-xs'>
                   サンプルを表示する
                 </label>
               </div>
@@ -241,7 +242,7 @@ export default function Maker() {
                 label='保存して入力用URLを発行'
                 disabled={!canSubmit}
               />
-              <div className='flex w-full my-2'>
+              <div className='my-2 flex w-full'>
                 <input
                   className='flex-1 rounded border px-2 py-1 text-gray-700'
                   onChange={() => {}}
@@ -250,7 +251,7 @@ export default function Maker() {
                   disabled
                 />
                 <PrimaryButton
-                  className='bg-blue-500 text-white px-2 py-1 rounded'
+                  className='rounded bg-blue-500 px-2 py-1 text-white'
                   click={() => copyTextToClipboard(url)}
                   disabled={url.length <= 0}
                 >
@@ -260,6 +261,14 @@ export default function Maker() {
             </form>
           </div>
         </div>
+      </div>
+      <div className='mt-2 border-t p-2'>
+        <p className='text-xs'>
+          既存のマトリクス画像に入力する場合は
+          <Link className='text-blue-500' href={'/image'}>
+            こちら
+          </Link>
+        </p>
       </div>
     </main>
   )
@@ -284,10 +293,7 @@ const ColorPicker = ({
   }
   return (
     <>
-      <button
-        className='base-border border bg-white p-0.5'
-        onClick={handleOpen}
-      >
+      <button className='border bg-white p-0.5' onClick={handleOpen}>
         <p className='h-6 w-28' style={{ backgroundColor: color }}></p>
       </button>
       {isPickerOpen && (
