@@ -1,4 +1,4 @@
-FROM node:22-bookworm
+FROM arm64v8/node:22-bookworm
 
 WORKDIR /app
 
