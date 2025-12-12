@@ -2,16 +2,22 @@ import { Metadata } from 'next'
 import { Input } from './input'
 import { fetchCacheTemplate } from './api'
 
-export default function Template({ params }: { params: { key: string } }) {
-  return <Input templateKey={params.key} />
+export default async function Template({
+  params
+}: {
+  params: Promise<{ key: string }>
+}) {
+  const { key } = await params
+  return <Input templateKey={key} />
 }
 
 export async function generateMetadata({
   params
 }: {
-  params: { key: string }
+  params: Promise<{ key: string }>
 }): Promise<Metadata> {
-  const template = await fetchCacheTemplate(params.key)
+  const { key } = await params
+  const template = await fetchCacheTemplate(key)
   let title = '配置するやつメーカー'
   if (template != null) {
     title = `配置するやつメーカー | ${template?.title}`

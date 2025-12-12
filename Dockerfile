@@ -1,11 +1,19 @@
-FROM arm64v8/node:19.9-bullseye
+FROM node:22-bookworm
 
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
+# pnpmを有効化
+RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
+
+# 依存関係ファイルを先にコピー（キャッシュ効率化）
+COPY package.json pnpm-lock.yaml ./
+
+# 依存関係インストール
+RUN pnpm install --frozen-lockfile
+
+# ソースコードをコピー
 COPY src src
 COPY tsconfig.json tsconfig.json
-COPY package*.json ./
 COPY next.config.js next.config.js
 COPY tailwind.config.ts tailwind.config.ts
 COPY postcss.config.js postcss.config.js
@@ -26,12 +34,14 @@ ENV NEXT_PUBLIC_FIREBASE_APP_ID=${FIREBASE_APP_ID}
 ARG FIREBASE_MEASUREMENT_ID
 ENV NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${FIREBASE_MEASUREMENT_ID}
 
-RUN npm ci
-RUN npm run build
+RUN pnpm run build
 
 ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+ENV HOME=/home/nextjs
+RUN mkdir -p /home/nextjs/.cache \
+    && chown -R nextjs:nodejs /home/nextjs
 # permission denied対策
 RUN chown nextjs:nodejs /app/.next/cache
 
@@ -40,6 +50,5 @@ USER nextjs
 EXPOSE 3001
 ENV PORT 3001
 ENV HOST 0.0.0.0
-ENV NODE_TLS_REJECT_UNAUTHORIZED 0
 
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]
