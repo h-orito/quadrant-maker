@@ -9,21 +9,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## コマンド
 
 ```bash
-npm run dev      # 開発サーバー起動 (localhost:3000)
-npm run build    # プロダクションビルド
-npm run lint     # ESLint実行
-npm run start    # プロダクションサーバー起動
+pnpm dev          # 開発サーバー起動 (localhost:3000)
+pnpm build        # プロダクションビルド
+pnpm lint         # ESLint実行
+pnpm preview      # Cloudflare Workersランタイム(workerd)上でローカル確認
+pnpm run deploy   # Cloudflare Workersへビルド＆デプロイ
 ```
 
 ## 技術スタック
 
-- Next.js 14 (App Router)
+- Next.js 15 (App Router)
 - TypeScript
 - Tailwind CSS
 - Firebase Realtime Database（テンプレートの保存・取得）
 - react-hook-form（フォーム管理）
 - react-color（カラーピッカー）
 - react-input-slider（位置調整スライダー）
+
+## デプロイ
+
+Cloudflare Workers（`@opennextjs/cloudflare` アダプタ）で `https://positioning-map.wolfort.dev` に配信。
+
+- `wrangler.jsonc` - Worker設定（カスタムドメイン含む）
+- `open-next.config.ts` - OpenNextアダプタ設定
+- `.github/workflows/deploy_frontend.yml` - mainへのpushで自動デプロイ（GitHub Secretsに `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` とFirebase各種が必要）
 
 ## アーキテクチャ
 
@@ -51,10 +60,10 @@ npm run start    # プロダクションサーバー起動
 
 ## 環境変数
 
-Firebase設定は `src/constant/env.ts` で定義。必要な環境変数:
-- FIREBASE_API_KEY
-- FIREBASE_AUTH_DOMAIN
-- FIREBASE_PROJECT_ID
-- FIREBASE_STORAGE_BUCKET
-- FIREBASE_MESSAGING_SENDER_ID
-- FIREBASE_APP_ID
+Firebase設定は `src/constant/env.ts` で定義。`NEXT_PUBLIC_` プレフィックス付きでビルド時にインライン化される（ローカルは `.env.local`、CIはGitHub Secretsから注入）。必要な環境変数:
+- NEXT_PUBLIC_FIREBASE_API_KEY
+- NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+- NEXT_PUBLIC_FIREBASE_PROJECT_ID
+- NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+- NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+- NEXT_PUBLIC_FIREBASE_APP_ID

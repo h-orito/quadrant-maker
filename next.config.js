@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-const nextConfig = {
-  basePath: '/positioning-map'
-}
+const nextConfig = {}
 
 module.exports = nextConfig

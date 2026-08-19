@@ -1,45 +1,38 @@
-name: delivery frontend
+name: deploy to cloudflare workers
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
+
 jobs:
-  build:
-    runs-on: [ubuntu-latest]
-    env:
-      IMAGE_NAME: quadrant-maker-frontend
+  deploy:
+    runs-on: ubuntu-latest
     steps:
       - name: clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      # to build arm64
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: setup pnpm
+        uses: pnpm/action-setup@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: setup node
+        uses: actions/setup-node@v4
         with:
-          registry: ghcr.io
-          username: h-orito
-          password: ${{ secrets.PACKAGE_PAT }}
+          node-version: 22
+          cache: pnpm
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/arm64
-          push: true
-          tags: ghcr.io/h-orito/${{ env.IMAGE_NAME }}:latest
-          build-args: |
-            FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
-            FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }}
-            FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
-            FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}
-            FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
-            FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}
-            FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: build and deploy
+        run: pnpm run deploy
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

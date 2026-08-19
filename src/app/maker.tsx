@@ -67,7 +67,7 @@ export default function Maker() {
         } as Template,
         key
       )
-      const newUrl = `${location.origin}/positioning-map/template/${newKey}`
+      const newUrl = `${location.origin}/template/${newKey}`
       setUrl(newUrl)
       setKey(newKey)
     },
